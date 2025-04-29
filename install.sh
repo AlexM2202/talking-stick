@@ -2,6 +2,8 @@
 
 default_dir=$(pwd)
 
+apt install python3-pip
+
 pip install virtualenv
 python3 -m venv .
 
