@@ -30,7 +30,7 @@ To use the Talking Stick, you can invite the bot to your discord server using th
 To self-host the Talking Stick bot, follow these steps:
 
 1.  Create a discord bot
-    Navigate to the Discord Developer Portal [here]() and create a discord bot. In the 'Installation' tab make sure that 'Guild Install' is selected. In the 'Scopes' Select 'bot' and 'applications.commands'. Next make sure you have the following permissions selected
+    Navigate to the Discord Developer Portal [here](https://discord.com/login?redirect_to=/developers) and create a discord bot. In the 'Installation' tab make sure that 'Guild Install' is selected. In the 'Scopes' Select 'bot' and 'applications.commands'. Next make sure you have the following permissions selected
     * Create Private Threads
     * Manage Threads
     * Mention Everyone
