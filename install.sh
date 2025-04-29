@@ -12,6 +12,7 @@ cd $default_dir/talking-stick
 mkdir logs
 mkdir json
 touch json/guilds.json
+echo "{}" >> json/guilds.json
 mv $default_dir/src .
 mv $default_dir/bot.py .
 
