@@ -45,21 +45,21 @@ To self-host the Talking Stick bot, follow these steps:
 
 2.  Clone the repository:
     ```bash
-git clone https://github.com/your-username/talking-stick-bot.git
-```
+        git clone https://github.com/your-username/talking-stick-bot.git
+    ```
 3.  Navigate to the `talking-stick` directory:
     ```bash
-cd talking-stick
-```
+        cd talking-stick
+    ```
 4.  Run the installation script:
     ```bash
-bash install.sh
-```
+        bash install.sh
+    ```
 This script will install the required dependencies, create a virtual environment, and set up the bot.
 5.  Set up your bot token:
     * Use the API token that we got when we created our discord bot and paste it into the terminal when prompted
     ```bash
-    Enter your bot token: 
+        Enter your bot token: 
     ```
 
 Note, this bot was intended to run on linux systems. I cannot confirm it will work on Windows based machines.
