@@ -52,19 +52,14 @@ class Stick:
         Returns:
             None
         """
-        # print("Claiming stick...")
-        # self.queue.put(interaction.user)
-
-        
+      
         if not tsjson.is_guild_enabled(interaction.guild):
-            # print("Bot disabled!")
             await interaction.response.send_message("Bot disabled!", ephemeral=True)
             return
 
         member = interaction.user
         
         if self.active:
-           # print("Adding to queue...")
             self.queue.add(member)
             await interaction.response.send_message(f"You are number {self.queue.get_location()} in line", ephemeral=True)
             return
@@ -96,23 +91,18 @@ class Stick:
         Returns:
             None
         """
-        # print("in function")
         if not self.active:
-            # print("No session active...")
             await interaction.response.send_message("No session is active!", ephemeral=True)
             return
 
         member = interaction.user
         if member.id != self.queue.peek().id:
-            # print("You are not the first in line...")
             await interaction.response.send_message("You are not the first in line!", ephemeral=True)
             return
 
         self.queue.pop()
 
-        # print("Q pop")
         if self.queue.is_empty():
-            # print("No more members in queue...")
             if not interaction.response.is_done():
                 await interaction.response.send_message("You passed the stick!", ephemeral=True)
             await self.end_session()
@@ -146,18 +136,14 @@ class Stick:
         Returns:
             None
         """
-        # print("Starting session...")
         self.priv_thread = await interaction.channel.create_thread(name="Talking Stick Session", auto_archive_duration=60, type=discord.ChannelType.private_thread)
         for member in self.channel.members:
-            # print(f"Adding {member.name}")
             await self.priv_thread.add_user(member)
             if member != interaction.user:
-                # print(f"Muting {member.name}")
                 await member.edit(mute=True)
         
         await self.priv_thread.send("@everyone Talking Stick Session started! Use /tsclaim to claim the stick and /tspass to pass the stick.")
         
-        # self.timer_task = interaction.client.loop.create_task(self.end_session())
 
     async def end_session(self):
         """
@@ -169,10 +155,7 @@ class Stick:
         Returns:
             None
         """
-        # print("Ending session...")
-        # print(self.channel)
         for member in self.channel.members:
-            # print(f"Unmuting {member.name}")
             await member.edit(mute=False)
         self.active = False
         if self.timer_task:
@@ -323,9 +306,7 @@ class StickManager:
         """
         num_sticks_purged = 0
         for voice_channel_id in list(self.sticks):
-            # print(f"Checking stick for {voice_channel_id} {self.sticks[voice_channel_id].active}")
             if not self.sticks[voice_channel_id].active:
-                # print(f"Removing stick for {voice_channel_id}")
                 del self.sticks[voice_channel_id]
                 num_sticks_purged += 1
         return num_sticks_purged
@@ -374,6 +355,5 @@ class StickManager:
             for.
         """
         sticks = self.get_sticks_by_guild(guild)
-        # print(sticks)
         for stick in sticks:
             await stick.kill_session()
