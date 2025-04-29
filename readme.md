@@ -40,6 +40,7 @@ To self-host the Talking Stick bot, follow these steps:
     * Send Messages in Threads
     * Use Voice Activity
     * View Channels
+    
     Once you have those selected copy the Install Link and paste it into any browser, or into a text channel in the server you want to install the bot in.
 
     Finally, navigate to the 'Bot' tab and click 'Reset Token'. Discord will prompt you for your password, after entering it it will show a token on screen. Copy it and save it for later. We will use it during the install.
