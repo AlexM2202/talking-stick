@@ -21,7 +21,7 @@ The Talking Stick Bot is a virtual "talking stick" that allows only one person t
 
 **Getting Started**
 ---------------
-To use the Talking Stick, you can invite the bot to your discord server using the invite link [here](https://discord.com/oauth2/authorize?client_id=1253826844436856944). If you want to host the bot yourself follow the self hosting 
+To use the Talking Stick, you can invite the bot to your discord server using the invite link [here](https://discord.com/oauth2/authorize?client_id=1253826844436856944). If you want to host the bot yourself follow the self hosting guide below.
 
 
 **Self-Hosting**
