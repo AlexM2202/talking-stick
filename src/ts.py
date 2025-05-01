@@ -52,7 +52,7 @@ class Stick:
         Returns:
             None
         """
-      
+        
         if not tsjson.is_guild_enabled(interaction.guild):
             await interaction.response.send_message("Bot disabled!", ephemeral=True)
             return
@@ -64,7 +64,6 @@ class Stick:
             await interaction.response.send_message(f"You are number {self.queue.get_location()} in line", ephemeral=True)
             return
         
-        # print("No session active...")
         self.queue.add(member)
         self.channel = member.voice.channel
         await self.start_session(interaction)
@@ -111,10 +110,14 @@ class Stick:
         if self.timeout_timer:
             self.timeout_timer.cancel()
             self.timeout_timer = None
-    
-        next_member = self.queue.pop()
-        await next_member.edit(mute=True)
-        await member.edit(mute=False)
+
+        next_member = self.queue.peek()
+        # swap who is muted
+        await next_member.edit(mute=False)
+        await member.edit(mute=True)
+        # restart timer
+        self.timer_task = asyncio.create_task(self.timeout_timer(interaction=interaction))
+        # finish up
         if not interaction.response.is_done():
             await interaction.response.send_message(f"You passed the stick.", ephemeral=True)
         await self.priv_thread.send(f"{next_member.mention} now has the stick!")
@@ -144,7 +147,6 @@ class Stick:
         
         await self.priv_thread.send("@everyone Talking Stick Session started! Use /tsclaim to claim the stick and /tspass to pass the stick.")
         
-
     async def end_session(self):
         """
         Ends a talking stick session.
@@ -218,6 +220,8 @@ class Stick:
             None
         """
         if self.active:
+            if member == self.queue.peek():
+                await self.pass_stick(member)
             await self.priv_thread.remove_user(member)
             await self.priv_thread.send(f"{member.mention} has left the session!")
             await member.edit(mute=False)
@@ -357,3 +361,4 @@ class StickManager:
         sticks = self.get_sticks_by_guild(guild)
         for stick in sticks:
             await stick.kill_session()
+            self.del_stick(stick.channel)
