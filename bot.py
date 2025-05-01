@@ -73,6 +73,12 @@ class bot(discord.Client):
         await self.change_presence(activity=discord.CustomActivity("Use /help"))
         log.log_info(f'{self.user} has connected to Discord!')
 
+bot = bot(intents=intents)
+stick_manager = ts.StickManager()
+
+
+# --- Utilities ---
+
 def check_admin(user: discord.User) -> bool:
     """
     Checks if the given user has an administrator role.
@@ -90,11 +96,27 @@ def check_admin(user: discord.User) -> bool:
         if role.permissions.administrator:
             return True
 
-bot = bot(intents=intents)
-stick_manager = ts.StickManager()
+def check_thread_permissions(channel: discord.TextChannel, users: list[discord.User]) -> bool:
+    """
+    Checks if all users in a list have permissions to view a given text channel.
 
+    This function iterates over the users in the list and checks if they have the
+    'view_channel' permission for the given text channel. If any of the users do
+    not have this permission, the function returns False. If all users do have
+    this permission, the function returns True.
 
-# --- Utilities ---
+    Parameters:
+        channel (discord.TextChannel): The text channel to check.
+        users (list[discord.User]): The users to check.
+
+    Returns:
+        bool: True if all users have permissions to view the channel, False otherwise.
+    """
+    for user in users:
+        if not channel.permissions_for(user).send_messages:
+            return False
+    return True
+
 @bot.event
 async def on_voice_state_update(member: discord.Member, before: discord.VoiceState, after: discord.VoiceState):
     """
@@ -114,6 +136,7 @@ async def on_voice_state_update(member: discord.Member, before: discord.VoiceSta
         before (discord.VoiceState): The voice state for the member before the change.
         after (discord.VoiceState): The voice state for the member after the change.
     """
+    # User joins a voice channel with active stick
     if before.channel != after.channel and after.channel is not None:
         existing_stick = stick_manager.get_stick_by_channel(after.channel)
         if existing_stick is not None:
@@ -123,6 +146,7 @@ async def on_voice_state_update(member: discord.Member, before: discord.VoiceSta
             except Exception as e:
                 log.log_error(e)
                 member.send("An error occurred while joining the session.\nThe most likely cause is that you don't have permissions for the text channel in which the session was called from.\nPlease try again, or contact an admin.")
+    # User leaves a voice channel with active stick
     if after.channel is None:
         existing_stick = stick_manager.get_stick_by_channel(before.channel)
         if existing_stick is not None:
@@ -131,7 +155,6 @@ async def on_voice_state_update(member: discord.Member, before: discord.VoiceSta
                 log.log_info(f"{member.name} removed from {before.channel.name}")
             except Exception as e:
                 log.log_error(e)
-
 
 # --- User Commands ---
 
@@ -155,6 +178,11 @@ async def claim_stick(interaction: discord.Interaction):
         await interaction.response.send_message("You are not in a voice channel", ephemeral=True)
         return
     
+    # Check if all users in call have access to the text channel that the command was invoked in
+    if not check_thread_permissions(interaction.channel, interaction.user.voice.channel.members):
+        await interaction.response.send_message("ERROR:\nNot everyone in your call has access to this text channel. Please use a text channel that everyone has access to.", ephemeral=True)
+        return
+
     # get our stick manager to see if we have a stick active
     existing_stick = stick_manager.get_stick_by_channel(interaction.user.voice.channel)
     if existing_stick is None:
@@ -190,10 +218,12 @@ async def pass_stick(interaction: discord.Interaction):
     """
     # get our stick and pass
     curr_stick = stick_manager.get_stick_by_channel(interaction.user.voice.channel)
+    # no active stick for this call
     if curr_stick is None:
         await interaction.response.send_message("There is no active talking stick!", ephemeral=True)
         return
     log.log_info(f"Passing stick for {interaction.user.name} in {interaction.user.voice.channel.name}")
+    # pass
     try:
         await curr_stick.pass_stick(interaction)
     except Exception as e:
@@ -209,6 +239,8 @@ async def print_help(interaction: discord.Interaction):
     This command sends a message explaining how to use the bot and listing all the commands.
     """
     log.log_info(f"{interaction.user.name} used /help in {interaction.guild.name}")
+
+    # Admin commands
     if check_admin(interaction.user):
         try:
             await interaction.response.send_message(
@@ -228,6 +260,7 @@ async def print_help(interaction: discord.Interaction):
             log.log_error(e)
             await interaction.channel.send("An error occurred while sending help.\nPlease try again, or contact an admin.")
     
+    # User commands
     try:
         await interaction.response.send_message(
             "Talking Stick is a discord bot that allows you to have a talking stick session in a voice channel.\n"
@@ -286,13 +319,11 @@ async def disable(interaction: discord.Interaction):
     """
     log.log_info(f"{interaction.user.name} used /disable in {interaction.guild.name}")
     if not check_admin(interaction.user):
-        # await interaction.response.send_message("You are not an admin!", ephemeral=True)
-        print("You are not an admin!")
+        await interaction.response.send_message("You are not an admin!", ephemeral=True)
         return
     await interaction.response.send_message("The bot is now disabled for this server", ephemeral=True)
     tsjson.disable_guild(interaction.guild)
     await stick_manager.kill_sticks(interaction.guild)
-    # await interaction.channel.send("The bot is now disabled for this server")
         
 
 @bot.tree.command(name="settimeout", description="Set the timeout (in seconds) for the talking stick.")
