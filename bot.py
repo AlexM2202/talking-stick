@@ -57,9 +57,6 @@ class bot(discord.Client):
         creates the necessary tables in the database.
         """
         if not self.synced:
-            # print('Clearing commands...')
-            # self.tree.clear_commands(guild=None)
-            # print('Syncing commands...')
             log.log_info('Syncing Commands...')
             await self.tree.sync()
             self.synced = True
@@ -69,7 +66,6 @@ class bot(discord.Client):
     
 
     async def on_ready(self):
-        print(f'{self.user} has connected to Discord!')
         await self.change_presence(activity=discord.CustomActivity("Use /help"))
         log.log_info(f'{self.user} has connected to Discord!')
 
