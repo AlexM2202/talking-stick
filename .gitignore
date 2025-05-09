@@ -7,8 +7,8 @@ bin/
 config/
 include/
 lib/
-lib64/
 pyvenv.cfg
+lib64
 
 #ignore .env
 .env
