@@ -7,6 +7,7 @@ bin/
 config/
 include/
 lib/
+lib64
 pyvenv.cfg
 lib64
 
@@ -16,3 +17,4 @@ lib64
 #ignore folders made during install
 logs/
 json/
+

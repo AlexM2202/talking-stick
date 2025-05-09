@@ -195,7 +195,10 @@ async def claim_stick(interaction: discord.Interaction):
         log.log_error(e)
         await interaction.response.send_message("Error claiming stick. Please try again later.\nIf the problem persists, contact an admin", ephemeral=True)
         log.log_warning(f"Due to error, deleting stick for {interaction.user.name} in {interaction.user.voice.channel.name}")
+<<<<<<< HEAD
+=======
         curr_stick.kill_session()
+>>>>>>> dev
         stick_manager.del_stick(interaction.user.voice.channel)
         return
 
@@ -272,6 +275,12 @@ async def print_help(interaction: discord.Interaction):
         log.log_error(e)
         await interaction.channel.send("An error occurred while sending help.\nPlease try again, or contact an admin.")
 
+<<<<<<< HEAD
+
+
+# --- Admin Commands ---
+
+=======
 # --- Admin Commands ---
 
 # @bot.tree.command(name="super", description="Grants a user a super stick.")
@@ -301,6 +310,7 @@ async def print_help(interaction: discord.Interaction):
 #     else:
 #         await interaction.response.send_message("You are not an admin!", ephemeral=True)
 
+>>>>>>> dev
 @bot.tree.command(name="enable", description="Enable the bot.")
 @commands.has_permissions(administrator=True)
 async def enable(interaction: discord.Interaction):
