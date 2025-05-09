@@ -37,6 +37,11 @@ class Stick:
         self.guild_id = channel.guild.id
         self.channel = channel
         self.priv_thread = None
+<<<<<<< HEAD
+=======
+        self.super_stick = None
+        self.emergency_used = []
+>>>>>>> dev
 
     async def claim(self, interaction: discord.Interaction):
         """
@@ -59,18 +64,35 @@ class Stick:
 
         member = interaction.user
         
+<<<<<<< HEAD
         if self.active:
             self.queue.add(member)
             await interaction.response.send_message(f"You are number {self.queue.get_location()} in line", ephemeral=True)
             return
         
         self.queue.add(member)
+=======
+        self.queue.add(member, interaction)
+
+        if self.active:
+            await interaction.response.send_message(f"You are number {self.queue.get_location(member)} in line", ephemeral=True)
+            return
+        
+>>>>>>> dev
         self.channel = member.voice.channel
         await self.start_session(interaction)
         self.active = True
         await interaction.response.send_message("Session started!", ephemeral=True)
+<<<<<<< HEAD
         await self.priv_thread.send(f"{interaction.user.mention} has claimed the stick! You have {tsjson.get_stick_timeout(interaction.guild)} seconds to speak.")
         self.timer_task = asyncio.create_task(self.timeout_timer(interaction=interaction))
+=======
+        if tsjson.get_stick_timeout(interaction.guild) == 0:
+            await self.priv_thread.send(f"{interaction.user.mention} has claimed the stick!")
+        else:
+            await self.priv_thread.send(f"{interaction.user.mention} has claimed the stick! You have {tsjson.get_stick_timeout(interaction.guild)} seconds to speak.")
+            self.timer_task = asyncio.create_task(self.timeout_timer(interaction=interaction))
+>>>>>>> dev
     
     async def pass_stick(self, interaction: discord.Interaction):
         """
@@ -95,18 +117,27 @@ class Stick:
             return
 
         member = interaction.user
+<<<<<<< HEAD
         if member.id != self.queue.peek().id:
+=======
+        if member.id != self.queue.peek()["user"].id:
+>>>>>>> dev
             await interaction.response.send_message("You are not the first in line!", ephemeral=True)
             return
 
         self.queue.pop()
 
+<<<<<<< HEAD
         if self.queue.is_empty():
+=======
+        if self.queue.is_empty() and self.super_stick == None:
+>>>>>>> dev
             if not interaction.response.is_done():
                 await interaction.response.send_message("You passed the stick!", ephemeral=True)
             await self.end_session()
             return
         
+<<<<<<< HEAD
         if self.timeout_timer:
             self.timeout_timer.cancel()
             self.timeout_timer = None
@@ -117,6 +148,20 @@ class Stick:
         await member.edit(mute=True)
         # restart timer
         self.timer_task = asyncio.create_task(self.timeout_timer(interaction=interaction))
+=======
+        if self.timer_task and not self.timer_task.done():
+            self.timer_task.cancel()
+            self.timer_task = None
+
+        next_member = self.queue.peek()["user"]
+        next_member_interaction = self.queue.peek()["interaction"]
+        # swap who is muted
+        await next_member.edit(mute=False)
+        if member != self.super_stick:
+            await member.edit(mute=True)
+        # restart timer
+        self.timer_task = asyncio.create_task(self.timeout_timer(next_member_interaction))
+>>>>>>> dev
         # finish up
         if not interaction.response.is_done():
             await interaction.response.send_message(f"You passed the stick.", ephemeral=True)
@@ -142,7 +187,11 @@ class Stick:
         self.priv_thread = await interaction.channel.create_thread(name="Talking Stick Session", auto_archive_duration=60, type=discord.ChannelType.private_thread)
         for member in self.channel.members:
             await self.priv_thread.add_user(member)
+<<<<<<< HEAD
             if member != interaction.user:
+=======
+            if member != interaction.user and member != self.super_stick:
+>>>>>>> dev
                 await member.edit(mute=True)
         
         await self.priv_thread.send("@everyone Talking Stick Session started! Use /tsclaim to claim the stick and /tspass to pass the stick.")
@@ -157,6 +206,7 @@ class Stick:
         Returns:
             None
         """
+<<<<<<< HEAD
         for member in self.channel.members:
             await member.edit(mute=False)
         self.active = False
@@ -165,6 +215,25 @@ class Stick:
         await self.priv_thread.send(f"@everyone No one is queued for the stick! Session ending!")
         sleep(3)
         await self.priv_thread.delete()
+=======
+        print("ending")
+        for member in self.channel.members:
+            print(f"unmuting {member.name}")
+            await member.edit(mute=False)
+        self.active = False
+        self.queue.clear()
+        if self.timer_task:
+            print("canceling timer")
+            self.timer_task.cancel()
+            self.timer_task = None
+        print("sending message")
+        await self.priv_thread.send(f"@everyone No one is queued for the stick! Session ending!") # <--------------------
+        print("sleeping")
+        sleep(3)
+        print("deleting")  
+        await self.priv_thread.delete()
+        print("done")
+>>>>>>> dev
 
     async def timeout_timer(self, interaction: discord.Interaction):
         """
@@ -182,9 +251,31 @@ class Stick:
         Returns:
             None
         """
+<<<<<<< HEAD
         await asyncio.sleep(tsjson.get_stick_timeout(interaction.guild))
         await self.priv_thread.send(f"{interaction.user.mention} has timed out!")
         await self.pass_stick(interaction=interaction)
+=======
+        print("starting timer")
+        timeout = tsjson.get_stick_timeout(interaction.guild)
+        if timeout == 0:
+            return
+        await asyncio.sleep(timeout)
+        await self.priv_thread.send(f"{interaction.user.mention} has timed out!")
+        self.timer_task = None
+        await self.pass_stick(interaction)
+
+    async def assign_super_stick(self, member: discord.Member):
+
+        if member.voice.channel != self.channel:
+            return
+        if self.super_stick is not None:
+            await self.super_stick.edit(mute=False)
+        if self.queue.get_location(member):
+            self.queue.remove(member)
+        self.super_stick = member
+        
+>>>>>>> dev
 
     async def handle_user_joining(self, member: discord.Member):
         """
@@ -220,7 +311,11 @@ class Stick:
             None
         """
         if self.active:
+<<<<<<< HEAD
             if member == self.queue.peek():
+=======
+            if member == self.queue.peek()["user"]:
+>>>>>>> dev
                 await self.pass_stick(member)
             await self.priv_thread.remove_user(member)
             await self.priv_thread.send(f"{member.mention} has left the session!")
@@ -252,7 +347,11 @@ class Stick:
             await self.priv_thread.delete()
 
     def __repr__(self):
+<<<<<<< HEAD
         return f"Stick(active={self.active}, queue={self.queue}, channel={self.channel})"
+=======
+        return f"Stick(active={self.active}, queue={self.queue}, channel={self.channel}), guild_id={self.guild_id}, priv_thread={self.priv_thread}, timer_task={self.timer_task}"
+>>>>>>> dev
 
 class StickManager:
     def __init__(self):
@@ -315,7 +414,11 @@ class StickManager:
                 num_sticks_purged += 1
         return num_sticks_purged
     
+<<<<<<< HEAD
     def get_stick_by_channel(self, channel: discord.VoiceChannel):
+=======
+    def get_stick_by_channel(self, channel: discord.VoiceChannel) -> Stick:
+>>>>>>> dev
         """
         Gets the talking stick session for the given voice channel from the manager.
 

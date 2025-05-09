@@ -11,7 +11,11 @@ class StickQueue:
         self.queue = []
         self.lock = threading.Lock()
     
+<<<<<<< HEAD
     def add(self, user: discord.User):
+=======
+    def add(self, user: discord.User, interaction: discord.Interaction):
+>>>>>>> dev
         """
         Adds a user to the queue.
 
@@ -19,7 +23,11 @@ class StickQueue:
             user (discord.User): The user to add.
         """
         with self.lock:
+<<<<<<< HEAD
             self.queue.append(user)
+=======
+            self.queue.append({"user": user, "interaction": interaction})
+>>>>>>> dev
     
     def pop(self):
         """
@@ -78,7 +86,13 @@ class StickQueue:
             int: The location of the user in the queue.
         """
         with self.lock:
+<<<<<<< HEAD
             return self.queue.index(user)
+=======
+            for i in self.queue:
+                if i["user"] == user:
+                    return self.queue.index(i)
+>>>>>>> dev
 
     def remove(self, user: discord.User):
         """
@@ -88,7 +102,13 @@ class StickQueue:
             user (discord.User): The user to remove.
         """
         with self.lock:
+<<<<<<< HEAD
             self.queue.remove(user)
+=======
+            for i in self.queue:
+                if i["user"] == user:
+                    self.queue.remove(i)
+>>>>>>> dev
             
     def clear(self):
         """

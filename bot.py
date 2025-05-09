@@ -195,6 +195,10 @@ async def claim_stick(interaction: discord.Interaction):
         log.log_error(e)
         await interaction.response.send_message("Error claiming stick. Please try again later.\nIf the problem persists, contact an admin", ephemeral=True)
         log.log_warning(f"Due to error, deleting stick for {interaction.user.name} in {interaction.user.voice.channel.name}")
+<<<<<<< HEAD
+=======
+        curr_stick.kill_session()
+>>>>>>> dev
         stick_manager.del_stick(interaction.user.voice.channel)
         return
 
@@ -271,10 +275,42 @@ async def print_help(interaction: discord.Interaction):
         log.log_error(e)
         await interaction.channel.send("An error occurred while sending help.\nPlease try again, or contact an admin.")
 
+<<<<<<< HEAD
 
 
 # --- Admin Commands ---
 
+=======
+# --- Admin Commands ---
+
+# @bot.tree.command(name="super", description="Grants a user a super stick.")
+# @commands.has_permissions(administrator=True)
+# async def super_stick(interaction: discord.Interaction, user: discord.User):
+#     """
+#     Grants a user a super stick.
+
+#     This command is only available to server admins. If the user is not an admin, it will send a message indicating that.
+
+#     Parameters:
+#         interaction (discord.Interaction): The interaction object containing information about the command invocation and the user who invoked the command.
+#         user (discord.User): The user to grant a super stick to.
+
+#     Returns:
+#         None
+#     """
+#     log.log_info(f"{interaction.user.name} used /super in {interaction.guild.name}")
+#     existing_stick = stick_manager.get_stick_by_channel(interaction.user.voice.channel)
+#     if existing_stick is None:
+#         await interaction.response.send_message("There is no active talking stick!", ephemeral=True)
+#         return
+    
+#     if check_admin(interaction.user):
+#         existing_stick.assign_super_stick(user)
+#         await interaction.response.send_message(f"Super stick granted to {user.name}", ephemeral=True)
+#     else:
+#         await interaction.response.send_message("You are not an admin!", ephemeral=True)
+
+>>>>>>> dev
 @bot.tree.command(name="enable", description="Enable the bot.")
 @commands.has_permissions(administrator=True)
 async def enable(interaction: discord.Interaction):
