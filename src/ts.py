@@ -254,6 +254,7 @@ class Stick:
 <<<<<<< HEAD
         await asyncio.sleep(tsjson.get_stick_timeout(interaction.guild))
         await self.priv_thread.send(f"{interaction.user.mention} has timed out!")
+        self.timeout_timer = None
         await self.pass_stick(interaction=interaction)
 =======
         print("starting timer")
