@@ -1,0 +1,18 @@
+#ignore __pycache
+__pycache__/
+/**/__pycache__
+
+#ignore venv made files
+bin/
+config/
+include/
+lib/
+lib64
+pyvenv.cfg
+
+#ignore .env
+.env
+
+#ignore folders made during install
+logs/
+json/
