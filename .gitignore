@@ -7,20 +7,14 @@ bin/
 config/
 include/
 lib/
-<<<<<<< HEAD
 lib64
-=======
-lib64/
->>>>>>> dev
 pyvenv.cfg
+lib64
 
 #ignore .env
 .env
 
 #ignore folders made during install
 logs/
-<<<<<<< HEAD
 json/
-=======
-json/
->>>>>>> dev
+
